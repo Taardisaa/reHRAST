@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-import traversal
+# import traversal
+import Patterns.traversal as traversal
 
 class Pattern(object):
 

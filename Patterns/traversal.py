@@ -1,5 +1,6 @@
 import ida_hexrays
-import Nodes
+# import Nodes
+import Patterns.Nodes as Nodes
 
 def is_inst(node):
     return type(node) == type(ida_hexrays.cinsn_t())

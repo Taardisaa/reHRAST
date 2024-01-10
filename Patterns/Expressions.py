@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 
 import sys
-import Patterns as p
-import Nodes
+# import Patterns as p
+import Patterns.Patterns as p 
+# import Nodes
+import Patterns.Nodes as Nodes
 
 
 class BindExpr(p.Pattern):

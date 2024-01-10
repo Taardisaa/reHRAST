@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import ida_hexrays
+import idc
 
 BLOCK_TYPES = [
     "casm", "cblock", "cdo", "cexpr", "cfor", "cgoto", "cif", "creturn",
@@ -10,12 +11,12 @@ BLOCK_TYPES = [
 
 def dump_function(fcn):
     val = dump_entry(fcn.body)
-    print val
+    print (val)
     for i in fcn.body.cblock:
-        print dump_entry(i)
+        print (dump_entry(i))
         inner = getattr(i, "c" + i.opname)
         if inner is not None:
-            print dump_entry(inner, 2)
+            print (dump_entry(inner, 2))
 
 
 def dump_entry(entry, lvl=1):
@@ -26,10 +27,10 @@ def dump_entry(entry, lvl=1):
             if getattr(entry, i) is not None:
                 res += "\n{}Have {}".format("\t" * lvl, i)
     except:
-        print dir(entry)
+        print (dir(entry))
     return res
 
 
 def run():
-    fcn = ida_hexrays.decompile(here())
+    fcn = ida_hexrays.decompile(idc.here())
     dump_function(fcn)

@@ -3,12 +3,21 @@
 import ctypes
 import sys
 import re
-import importlib
+# import importlib
+from importlib import reload
 import idaapi
-idaapi.require("Patterns")
-idaapi.require("Matcher")
-idaapi.require("ast_helper")
-idaapi.require("traverse")
+
+# try:
+#     idaapi.require("Patterns")
+#     idaapi.require("Matcher")
+#     idaapi.require("ast_helper")
+#     idaapi.require("traverse")
+# except:
+import Patterns
+import Matcher
+import ast_helper
+import traverse
+    
 import ready_patterns
 
 EVENTS_HEXR = {
@@ -63,7 +72,7 @@ def reLOAD():
     reload(ready_patterns)
     used_pats = []
     for i in ready_patterns.PATTERNS:
-        print i[0]
+        print (i[0])
         used_pats.append((eval(i[0], globals(), locals()), i[1], i[2]))
 
 
@@ -102,4 +111,4 @@ def hr_remove():
 
 
 if __name__ == "__main__":    
-    print idaapi.install_hexrays_callback(hexrays_events_callback_m)
+    print (idaapi.install_hexrays_callback(hexrays_events_callback_m))

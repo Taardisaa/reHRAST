@@ -76,7 +76,7 @@ get_proc_addr = """Patterns.ExprInst(
 def getProc_addr(idx, ctx):
     import ida_bytes
     obj = ctx.get_obj("fcnPtr")
-    print "%x" % obj.addr
+    print ("%x" % obj.addr)
     name = ctx.get_obj("fcnName")
     name_str = ida_bytes.get_strlit_contents(name.addr, -1, -1)
     ida_name.set_name(obj.addr, name_str)
@@ -110,17 +110,17 @@ def rename_struct_field_as_func_name(idx, ctx):
     import idc
     import ida_bytes
     obj = ctx.get_memref('stroff')
-    print "%x" % obj.ea
+    print ("%x" % obj.ea)
     ti = idaapi.opinfo_t()
     f = idc.GetFlags(obj.ea)
     if idaapi.get_opinfo(obj.ea, 0, f, ti):
         print("tid=%08x - %s" % (ti.tid, idaapi.get_struc_name(ti.tid)))
-    print "Offset: {}".format(obj.offset)
+    print ("Offset: {}".format(obj.offset))
     import ida_struct
     obj2 = ctx.get_obj('fcn')
-    print "%x" % obj2.addr
+    print ("%x" % obj2.addr)
     name_str = ida_name.get_name(obj2.addr)
-    print "Name {}".format(name_str)
+    print ("Name {}".format(name_str))
     ida_struct.set_member_name(ida_struct.get_struc(ti.tid), obj.offset, name_str)
     return False
 
@@ -139,7 +139,7 @@ test_bind_expr = """Patterns.IfInst(Patterns.BindExpr('if_cond', Patterns.AnyPat
 def test_bind(idx, ctx):
     exprs = ctx.get_expr('if_cond')
     for i in exprs:
-        print i
+        print (i)
     return False
 
 
@@ -226,13 +226,13 @@ def xx(inst, ctx):
         GLOBAL = {}
         MAX = 0
         LAST_FCN_EA = ctx.fcn.entry_ea
-    print "{:x}".format(inst.ea)
+    print ("{:x}".format(inst.ea))
     v = ctx.get_var('r')
     n = ctx.get_expr('n')[0]
     val = n.n._value & 0xff
     v_o = get_var_offset(ctx.fcn, v.idx)
-    print "Var offset from stack:", v_o
-    print val 
+    print ("Var offset from stack:", v_o)
+    print (val )
     if v_o > MAX:
         MAX = v_o
     if val < 256:
@@ -247,7 +247,7 @@ def xx(inst, ctx):
         else:
 
             ret += GLOBAL[i]
-    print ret
+    print (ret)
 
 
 
@@ -272,7 +272,7 @@ def get_string_repr(obj, ctx):
             return repr(ida_bytes.get_strlit_contents(obj.obj_ea, 256, -1))
         else:
             name = ida_name.get_name(obj.obj_ea).split("@@")[0]
-            print name
+            print (name)
             if name[0] == ".":
                 name = name[1:]
             if "endl" in name:
@@ -284,19 +284,19 @@ def get_string_repr(obj, ctx):
         return ctx.get_var_name(obj.v.idx)
     # elif
     else:
-        print obj.opname
+        print (obj.opname)
     return ""
     
 
 def react_operator(idx, ctx):
-    print '%x' % (idx.ea)
+    print ('%x' % (idx.ea))
     fcn_object = ctx.get_obj("function")
     """next line was working on ELF"""
     demangled = ida_name.demangle_name(ida_name.get_name(fcn_object.addr)[1:], 0)
     """next line was working on MACH-O"""
     #demangled = ida_name.demangle_name(ida_name.get_name(fcn_object.addr), 0)
     
-    print demangled
+    print (demangled)
     if "operator<<" in demangled:
         arg2 = ctx.get_expr('arg2')[0]
         arg1 = ctx.get_expr('arg1')[0]
@@ -324,13 +324,13 @@ operator_replacing2 = """Patterns.ExprInst(
 )"""
 
 def react_operator2(idx, ctx):
-    print '%x' % (idx.ea)
+    print ('%x' % (idx.ea))
     fcn_object = ctx.get_obj("function")
     """next line was working on ELF"""
     demangled = ida_name.demangle_name(ida_name.get_name(fcn_object.addr)[1:], 0)
     """next line was working on MACH-O"""
     #demangled = ida_name.demangle_name(ida_name.get_name(fcn_object.addr), 0)
-    print demangled
+    print (demangled)
     if "operator<<" in demangled:
         arg1 = ctx.get_expr('arg1')[0]
         arg1_repr = get_string_repr(arg1, ctx)
@@ -379,15 +379,15 @@ string_deleter = """Patterns.IfInst(
 )""".format(ida_name.get_name_ea(0, "free_0"))
 
 def handle_string_destr(idx, ctx):
-    print '%x' % (idx.ea)
+    print ('%x' % (idx.ea))
     var = ctx.get_var('len')
     var2 = ctx.get_var('ptr')
-    print var
+    print (var)
     off1 = get_var_offset(ctx.fcn, var.idx)
     off2 = get_var_offset(ctx.fcn, var2.idx)
-    print off1 - off2
+    print (off1 - off2)
     if off1 - off2 == 20:
-        print "[+] Found string destructor"
+        print ("[+] Found string destructor")
         varexp = make_var_expr(var2.idx, var2.typ, var2.mba, arg=True)
         arglist = ida_hexrays.carglist_t()
         arglist.push_back(varexp)
@@ -426,7 +426,7 @@ Patterns.ExprInst(
 """
 
 def replace_dword_in_struct(idx, ctx):
-    print '%x' % idx.ea
+    print ('%x' % idx.ea)
     struct_expr = ctx.get_expr('struct_part')[0]
     var = ctx.get_var("struct_var")
     values = ctx.get_expr('values')[0]
@@ -444,12 +444,12 @@ def replace_dword_in_struct(idx, ctx):
     while inner_offset < 4:
         memb = ida_struct.get_member(sptr, offset+inner_offset)
         if memb is None:
-            print "Not enought members!"
+            print ("Not enought members!")
             is_suits = False
             break
         size = ida_struct.get_member_size(memb)
         if inner_offset + size  > 4:
-            print "Size fail!(%d bytes lenft but member size is %d)" % (4 - inner_offset, size)
+            print ("Size fail!(%d bytes lenft but member size is %d)" % (4 - inner_offset, size))
             is_suits = False
             break
         if size == 1:
@@ -459,14 +459,14 @@ def replace_dword_in_struct(idx, ctx):
             val = N & 0xffff
             N = N >> 16
         else:
-            print "Unkn size"
+            print ("Unkn size")
             is_suits = False
             break
         fields.append((inner_offset, val))
         inner_offset += size
         
     if is_suits is False:
-        print "Not suitable!"
+        print ("Not suitable!")
         return
     inslist = []
     for i in fields:
@@ -501,6 +501,6 @@ def replace_dword_in_struct(idx, ctx):
 #PATTERNS = [(global_struct_fields_sub, rename_struct_field_as_func_name, False)]
 #PATTERNS = [(test_bind_expr, test_bind, False)]
 #PATTERNS = [(str_asgn, xx, False)]
-#PATTERNS = [(operator_replacing, react_operator, False), (operator_replacing2, react_operator2, False)]
+PATTERNS = [(operator_replacing, react_operator, False), (operator_replacing2, react_operator2, False)]
 #PATTERNS = [(string_deleter, handle_string_destr, False)]
-PATTERNS = [(DWORD_STRUCT, replace_dword_in_struct, False)]
+# PATTERNS = [(DWORD_STRUCT, replace_dword_in_struct, False)]
